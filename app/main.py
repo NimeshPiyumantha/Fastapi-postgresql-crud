@@ -1,11 +1,9 @@
-from typing import Union
-
 from fastapi import FastAPI
-import models
+import model
 from routes import router
 from config import engine
 
-models.Base.metadata.create_all(bind=engine)
+model.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 

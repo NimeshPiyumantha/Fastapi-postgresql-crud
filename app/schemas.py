@@ -1,9 +1,8 @@
 from typing import List, Optional, Generic, TypeVar
-from pydantic import BaseModel , Field
+from pydantic import BaseModel,Field
 from pydantic.generics import GenericModel
 
 T = TypeVar('T')
-
 
 class BookSchema(BaseModel):
     id: Optional[int] = None
@@ -13,14 +12,11 @@ class BookSchema(BaseModel):
     class Config:
         orm_mode = True
 
-
 class Request(GenericModel, Generic[T]):
-    parameter: Optional[T] = Field(...)
-
+    parameter: T
 
 class RequestBook(BaseModel):
-    parameter: BookSchema = Field(...)
-
+    parameter: BookSchema
 
 class Response(GenericModel, Generic[T]):
     code: str
