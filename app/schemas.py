@@ -13,10 +13,10 @@ class BookSchema(BaseModel):
         orm_mode = True
 
 class Request(GenericModel, Generic[T]):
-    parameter: T
+    parameter: Optional[T] = Field(...)
 
 class RequestBook(BaseModel):
-    parameter: BookSchema
+    parameter: BookSchema = Field(...)
 
 class Response(GenericModel, Generic[T]):
     code: str
