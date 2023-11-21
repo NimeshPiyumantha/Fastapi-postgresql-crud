@@ -1,11 +1,13 @@
-from fastapi import APIRouter, HTTPException, Path
+from fastapi import APIRouter
 from fastapi import Depends
 from config import SessionLocal
 from sqlalchemy.orm import Session
-from schemas import BookSchema,Request,Response,RequestBook
+from schemas import Response, RequestBook
+
 import crud
 
 router = APIRouter()
+
 
 def get_db():
     db = SessionLocal()
@@ -17,26 +19,31 @@ def get_db():
 
 @router.post("/create")
 async def create_book_service(request: RequestBook, db: Session = Depends(get_db)):
-    crud.create_book(db, book=request.parameter)
+    created_book = crud.create_book(db, book=request.parameter)
     return Response(status="Ok",
-                    code="200",
-                    message="Book created successfully").dict(exclude_none=True)
+                code="200",
+                message="Book created successfully",
+                result=created_book).dict(exclude_none=True)
 
 
 @router.get("/")
 async def get_books(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    _books = crud.get_book(db, skip, limit)
-    return Response(status="Ok", code="200", message="Success fetch all data", result=_books)
+    books = crud.get_book(db, skip, limit)
+    return Response(status="Ok", code="200", message="Success fetch all data", result=books).dict(exclude_none=True)
 
-
-@router.patch("/update")
+@router.put("/update")
 async def update_book(request: RequestBook, db: Session = Depends(get_db)):
-    _book = crud.update_book(db, book_id=request.parameter.id,
+    up_book = crud.update_book(db, book_id=request.parameter.id,
                              title=request.parameter.title, description=request.parameter.description)
-    return Response(status="Ok", code="200", message="Success update data", result=_book)
+    return Response(status="Ok",
+                code="200",
+                message="Book update successfully",
+                result=up_book).dict(exclude_none=True)
 
-
-@router.delete("/delete")
-async def delete_book(request: RequestBook,  db: Session = Depends(get_db)):
-    crud.remove_book(db, book_id=request.parameter.id)
-    return Response(status="Ok", code="200", message="Success delete data").dict(exclude_none=True)
+@router.delete("/{id}")
+async def delete_book(id: int, db: Session = Depends(get_db)):
+    del_book = crud.remove_book(db, book_id=id)
+    return Response(status="Ok",
+                    code="200",
+                    message="Book deleted successfully",
+                    result=del_book).dict(exclude_none=True)
